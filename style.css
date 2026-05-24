@@ -1,0 +1,820 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-color: #0d0806; /* Darker midnight black */
+  --text-light: #f9f6f0;
+  --accent: #d4af37; /* Base gold */
+  --accent-light: #fcf6ba; /* Light gold */
+  --accent-dark: #aa771c; /* Deep gold */
+  --book-bg: #e6dcc8;
+  --page-bg: #fdfbf7;
+  --gold-gradient: linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(circle at center, #3a2218 0%, #1a100c 100%);
+  font-family: 'Lora', serif;
+  overflow: hidden;
+  color: var(--text-light);
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.branding-logo-small {
+  width: 120px;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+}
+
+.header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 2.8rem;
+  margin: 0;
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  letter-spacing: 2px;
+}
+
+.header p {
+  font-size: 1.2rem;
+  font-style: italic;
+  opacity: 0.8;
+  color: #e0d5c1;
+}
+
+.book-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  gap: 30px;
+  margin: 10px 0;
+}
+
+.nav-btn {
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: linear-gradient(145deg, rgba(62, 39, 35, 0.8), rgba(26, 16, 12, 0.9));
+  color: var(--accent);
+  font-size: 32px;
+  cursor: pointer;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.3s, box-shadow 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.1);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  flex-shrink: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#prev-btn { left: -10px; }
+#next-btn { right: -10px; }
+
+.nav-btn:hover {
+  background: linear-gradient(145deg, rgba(80, 50, 45, 0.9), rgba(40, 25, 20, 1));
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(212, 175, 55, 0.3);
+  border-color: rgba(212, 175, 55, 0.6);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.1); }
+  50% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(212, 175, 55, 0.6), 0 0 15px rgba(212, 175, 55, 0.4); }
+  100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(212, 175, 55, 0.1); }
+}
+
+#next-btn {
+  animation: pulse-glow 2s infinite;
+}
+#next-btn:hover {
+  animation: none;
+}
+
+/*
+  SISTEM SHIFTER BUKU: 
+  Mengatur lebar dinamis agar tombol navigasi merapat ke tengah saat buku tertutup, 
+  dan menjauh saat buku terbuka (Spread) 
+*/
+.book-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+  height: calc(100vh - 160px); /* Kurangi tinggi agar tidak mepet bawah */
+  position: relative;
+  z-index: 2;
+  --book-scale: 1;
+}
+
+.book-shifter {
+  width: 800px;
+  height: 565px;
+  flex-shrink: 0;
+  display: flex;
+  transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  overflow: visible;
+  transform: scale(var(--book-scale));
+  transform-origin: center center;
+}
+
+.book-wrapper {
+  position: relative;
+  width: 800px;
+  height: 565px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), clip-path 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  clip-path: inset(-50px -50px -50px -50px);
+}
+
+/* Lekukan Tengah Buku (Spine Shadow) */
+.book-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 60px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to right, 
+    rgba(255,255,255,0) 0%,
+    rgba(0,0,0,0.02) 20%, 
+    rgba(0,0,0,0.15) 45%, 
+    rgba(0,0,0,0.3) 50%, 
+    rgba(0,0,0,0.15) 55%, 
+    rgba(0,0,0,0.02) 80%,
+    rgba(255,255,255,0) 100%
+  );
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: multiply;
+}
+
+.book {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* Tumpukan Kertas (Page Edges) - Menambah efek ketebalan lembaran kertas */
+.book::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  bottom: -6px; /* Ketebalan tumpukan kertas ke bawah */
+  left: -4px; /* Ketebalan kertas saat buku terbuka ke kiri */
+  right: -4px; /* Ketebalan kertas ke kanan */
+  background: #f4ecdf;
+  border-radius: 4px;
+  box-shadow: 
+    inset -3px -3px 5px rgba(0,0,0,0.1),
+    inset 3px 3px 5px rgba(0,0,0,0.1);
+  z-index: -1;
+}
+
+/* Sampul Buku (Hardcover) - Lebih besar dan memberikan 3D base */
+.book::after {
+  content: '';
+  position: absolute;
+  top: -5px; /* Cover menonjol ke atas */
+  bottom: -12px; /* Cover menonjol ke bawah melebihi kertas */
+  left: -10px; /* Cover menonjol ke kiri */
+  right: -10px; /* Cover menonjol ke kanan */
+  background-color: #2b1810; /* Warna kulit cokelat gelap mewah */
+  background-image: url('https://www.transparenttextures.com/patterns/leather.png'); /* Tekstur kulit mewah */
+  border-radius: 6px;
+  z-index: -2;
+  box-shadow: 
+    inset 2px 2px 5px rgba(255,255,255,0.1),
+    inset -2px -2px 10px rgba(0,0,0,0.8),
+    0 25px 60px rgba(0, 0, 0, 0.9); /* Bayangan utama buku yang dramatis */
+}
+
+/* Saat Cover Depan (Lebar buku jadi setengah, bagian kanan yang tampil) */
+.book-shifter.front-cover {
+  width: 400px;
+}
+.book-shifter.front-cover .book-wrapper {
+  transform: translateX(-400px);
+  clip-path: inset(-50px -50px -50px 400px);
+}
+
+/* Saat Cover Belakang (Lebar buku jadi setengah, bagian kiri yang tampil) */
+.book-shifter.back-cover {
+  width: 400px;
+  transform: translateX(400px);
+}
+.book-shifter.back-cover .book-wrapper {
+  transform: translateX(0);
+  clip-path: inset(-50px 400px -50px -50px);
+}
+
+.my-page {
+  background-color: #f4ece4;
+  overflow: hidden;
+}
+
+.page-content {
+  width: 100%;
+  height: 100%;
+  background-size: 200% auto; /* Auto height to preserve natural aspect ratio */
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.15); 
+}
+
+.controls {
+  margin-top: 25px;
+  background: rgba(26, 16, 12, 0.6);
+  padding: 10px 25px;
+  border-radius: 30px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN (MOBILE & TABLET)
+========================================================= */
+@media (max-width: 750px) {
+  .app-container {
+    padding: 10px;
+  }
+  .header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .header h1 { 
+    font-size: 1.5rem; 
+  }
+  /* Cinematics Text Resizing for Mobile */
+  .cinematic-text {
+    font-size: 1.3rem;
+  }
+  .cinematic-logo {
+    width: 85%;
+  }
+  .select-prompt {
+    font-size: 1.2rem;
+  }
+  
+  /* Make scale smaller on mobile to prevent overlap (handled by JS now) */
+  
+  /* Kecilkan navigasi di HP */
+  .nav-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+  #prev-btn { left: 5px; }
+  #next-btn { right: 5px; }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    padding: 10px;
+  }
+  
+  .music-card { width: 100%; max-width: 300px; padding: 20px; }
+  .music-cards { gap: 15px; }
+
+  /* Floating Back Button di HP lebih kecil */
+  .floating-btn {
+    top: 10px;
+    left: 10px;
+    padding: 8px 15px;
+    font-size: 0.8rem;
+  }
+  .floating-btn i {
+    font-size: 1rem;
+  }
+}
+
+/* =========================================================
+   PORTRAIT WARNING OVERLAY
+========================================================= */
+.portrait-warning {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0d0806;
+  z-index: 999999;
+  color: var(--accent);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30px;
+}
+
+.portrait-warning i {
+  font-size: 5rem;
+  margin-bottom: 20px;
+  animation: float-pulse 2.5s infinite ease-in-out;
+}
+
+.portrait-warning h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.portrait-warning p {
+  font-family: 'Lora', serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-light);
+}
+
+@keyframes float-pulse {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-90deg); }
+}
+
+@media screen and (max-width: 900px) and (orientation: portrait) {
+  .portrait-warning {
+    display: flex;
+  }
+}
+
+@media (max-width: 600px) {
+  .header h1 { font-size: 1.8rem; margin-top: 10px; }
+  .book-container { gap: 15px; }
+  
+  /* Reset perilaku shifter untuk mobile karena mode Portrait (1 Halaman full) */
+  .book-shifter { width: 95%; height: 400px; }
+  .book-wrapper { width: 100%; height: 100%; }
+  
+  .book-shifter.front-cover { width: 95%; }
+  .book-shifter.front-cover .book-wrapper { 
+      transform: translateX(0); 
+      clip-path: inset(-50px -50px -50px -50px);
+  }
+  
+  .book-shifter.back-cover { width: 95%; }
+  .book-shifter.back-cover .book-wrapper {
+      transform: translateX(0);
+      clip-path: inset(-50px -50px -50px -50px);
+  }
+  
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) !important; /* Timpa hover anim agar tetap statis di Y */
+  }
+  .nav-btn:hover {
+    transform: translateY(-50%) scale(1.05) !important;
+  }
+  #prev-btn { left: -10px; }
+  #next-btn { right: -10px; }
+}
+
+/* =========================================================
+   PARTICLES (MAGICAL DUST)
+========================================================= */
+#particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9998;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background: var(--accent-light);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent-light);
+  opacity: 0;
+  animation: floatUp 10s infinite linear, twinkle 3s infinite ease-in-out;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 0.8; transform: translateY(80vh) scale(1); }
+  90% { opacity: 0.8; transform: translateY(20vh) scale(1); }
+  100% { transform: translateY(-10vh) scale(0); opacity: 0; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; box-shadow: 0 0 15px var(--accent-light), 0 0 30px white; }
+}
+
+/* =========================================================
+   INTRO SCREEN & MUSIC SELECTION
+========================================================= */
+
+#intro-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-color);
+  background: radial-gradient(circle at center, #1a100c 0%, #050302 100%);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 2s ease-in-out, visibility 2s ease-in-out;
+}
+
+.intro-content {
+  text-align: center;
+  width: 100%;
+  max-width: 900px;
+  padding: 20px;
+  position: relative;
+  z-index: 10000;
+}
+
+/* Cinematic Logo */
+.cinematic-logo {
+  max-width: 450px;
+  width: 80%;
+  margin: 0 auto;
+  display: block;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5) translateY(20px);
+  filter: drop-shadow(0 0 0 rgba(212, 175, 55, 0));
+  transition: all 4s cubic-bezier(0.25, 1, 0.5, 1);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+}
+
+.cinematic-logo.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) translateY(0);
+  filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.8));
+}
+
+.cinematic-logo.fade-out {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.2) translateY(-20px);
+  filter: blur(15px);
+}
+
+.cinematic-text {
+  font-family: 'Cinzel', serif;
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.8rem;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  filter: blur(10px);
+  transition: all 2s cubic-bezier(0.25, 1, 0.5, 1);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%) translateY(20px) scale(0.95);
+  pointer-events: none;
+}
+
+.cinematic-text.visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate(-50%, -50%) translateY(0) scale(1);
+}
+
+.cinematic-text.fade-out {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translate(-50%, -50%) translateY(-20px) scale(1.05);
+}
+
+#text-3 {
+  font-size: 3.5rem;
+}
+
+#music-selection {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1.5s ease-out;
+}
+
+#music-selection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.select-prompt {
+  font-family: 'Cinzel', serif;
+  color: var(--text-light);
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+.music-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.music-card {
+  background: rgba(13, 8, 6, 0.5); /* Extremely dark transparent base */
+  border: 1px solid rgba(212, 175, 55, 0.15); /* Subtle gold border */
+  border-radius: 15px;
+  padding: 30px 20px;
+  width: 220px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Smoother transition */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+}
+
+.music-card i {
+  font-size: 3rem;
+  color: var(--accent);
+  margin-bottom: 15px;
+  transition: transform 0.4s ease;
+}
+
+.music-card span {
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--text-light);
+  margin-bottom: 5px;
+}
+
+.music-card small {
+  font-family: 'Lora', serif;
+  color: #aaa;
+  font-size: 0.9rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.music-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: rgba(212, 175, 55, 0.8);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(212, 175, 55, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  background: rgba(13, 8, 6, 0.7);
+}
+
+.music-card:hover i {
+  transform: scale(1.15);
+  color: var(--accent-light);
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8));
+}
+
+@media (max-width: 750px) {
+  .cinematic-text { font-size: 1.8rem; }
+  #text-3 { font-size: 2.2rem; }
+  .music-card { width: 100%; max-width: 300px; padding: 20px; }
+  .music-cards { gap: 15px; }
+}
+
+/* =========================================================
+   MODE SELECTION & GALLERY
+========================================================= */
+
+#mode-selection {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1.5s ease-out;
+  display: none;
+}
+
+#mode-selection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Gallery Container */
+#gallery-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 40px 5%;
+  z-index: 100;
+  background: radial-gradient(circle at top, #1a100c 0%, #050302 100%);
+  -webkit-overflow-scrolling: touch; /* Momentum scroll di HP */
+  overscroll-behavior-y: contain;
+}
+
+.gallery-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.branding-logo {
+  width: 150px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5));
+}
+
+.gallery-title {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  font-size: 3rem;
+  text-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+  letter-spacing: 3px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding-bottom: 50px;
+}
+
+.gallery-item {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  background-color: #2a1f1a;
+  /* Memaksa GPU rendering (Hardware Acceleration) */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.gallery-item:hover {
+  transform: scale(1.02) translateZ(0);
+  border-color: var(--accent);
+  opacity: 0.9;
+}
+
+/* Floating Back Button */
+.floating-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+.floating-btn {
+  background: rgba(13, 8, 6, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: var(--accent);
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  letter-spacing: 1px;
+}
+
+.floating-btn:hover {
+  background: var(--gold-gradient);
+  color: #0d0806;
+  border-color: transparent;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+}
+
+/* Lightbox untuk Galeri */
+#gallery-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999999; /* Pastikan selalu paling atas */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  cursor: pointer; /* Bisa diklik untuk tutup */
+}
+
+#gallery-lightbox.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#lightbox-img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(212,175,55,0.3);
+  transform: scale(0.9);
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: default; /* Kursor normal untuk gambar */
+}
+
+#gallery-lightbox.visible #lightbox-img {
+  transform: scale(1);
+}
+
+.close-lightbox {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  color: var(--text-light);
+  font-size: 4rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+  line-height: 1;
+}
+
+.close-lightbox:hover {
+  color: var(--accent);
+  transform: scale(1.1) rotate(90deg);
+}

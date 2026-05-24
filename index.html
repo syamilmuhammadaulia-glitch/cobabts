@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-BTS The Rhapsodia 2026</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
+  <!-- Partikel Latar (Magical Dust) -->
+  <div id="particles"></div>
+
+  <!-- Suara Latar (Hidden) -->
+  <audio id="bg-music" loop></audio>
+
+  <!-- Layar Intro & Pilihan Musik -->
+  <div id="intro-screen">
+    <div class="intro-content">
+      <div class="intro-texts">
+        <!-- Logo Intro -->
+        <img id="intro-logo" src="logorhapsodia.png" alt="Rhapsodia Logo" class="cinematic-logo hidden">
+        
+        <h2 id="text-1" class="cinematic-text hidden">Tiga tahun terukir indah...</h2>
+        <h2 id="text-2" class="cinematic-text hidden">Sebuah perjalanan penuh memori.</h2>
+        <h1 id="text-3" class="cinematic-text hidden">Selamat Datang di The Rhapsodia 2026</h1>
+      </div>
+      
+      <div id="music-selection" class="hidden">
+        <p class="select-prompt">Pilih soundtrack untuk memulai perjalanan ini</p>
+        <div class="music-cards">
+          <button class="music-card" data-src="song1.mp3">
+            <i class="ph ph-music-notes"></i>
+            <span>Barasuara</span>
+            <small>Terbuang Dalam Waktu</small>
+          </button>
+          <button class="music-card" data-src="song2.mp3">
+            <i class="ph ph-music-notes"></i>
+            <span>Lomba Sihir</span>
+            <small>Ribuan Memori</small>
+          </button>
+          <button class="music-card" data-src="song3.mp3">
+            <i class="ph ph-music-notes"></i>
+            <span>Sheila on 7</span>
+            <small>Memori Baik</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pemilihan Mode -->
+      <div id="mode-selection" class="hidden">
+        <p class="select-prompt">Pilih bagaimana Anda ingin menjelajah</p>
+        <div class="music-cards">
+          <button class="music-card" id="mode-ebook">
+            <i class="ph ph-book-open"></i>
+            <span>Buku 3D</span>
+            <small>Baca selayaknya buku asli</small>
+          </button>
+          <button class="music-card" id="mode-gallery">
+            <i class="ph ph-squares-four"></i>
+            <span>Galeri Foto</span>
+            <small>Jelajah cepat semua halaman</small>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="background-overlay"></div>
+  
+  <!-- Mode Galeri -->
+  <div id="gallery-container" style="opacity: 0; pointer-events: none; transition: opacity 1s ease-in-out;">
+    <div class="gallery-header">
+      <img src="logorhapsodia.png" alt="Logo" class="branding-logo">
+      <h1 class="gallery-title">Album Memori</h1>
+    </div>
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- Thumbnail akan di-generate oleh JS -->
+    </div>
+  </div>
+
+  <!-- Lightbox Pop-up untuk Galeri (Dipindah ke body agar fixed-nya sempurna) -->
+  <div id="gallery-lightbox">
+    <span class="close-lightbox">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Mode Buku Tahunan -->
+  <div class="app-container" style="opacity: 0; pointer-events: none; transition: opacity 2s ease-in-out;">
+    
+    <button id="back-to-gallery-btn" class="floating-btn">
+      <i class="ph ph-squares-four"></i> Galeri
+    </button>
+
+    <header class="header">
+      <img src="logorhapsodia.png" alt="Logo" class="branding-logo-small">
+      <h1>The Rhapsodia 2026</h1>
+      <p>Buku Tahunan Siswa</p>
+    </header>
+
+    <div class="book-container">
+      <button id="prev-btn" class="nav-btn" aria-label="Previous Page">
+        <i class="ph ph-caret-left"></i>
+      </button>
+
+      <!-- Shifter bertugas mengatur lebar dinamis saat buku tertutup/terbuka -->
+      <div class="book-shifter" id="book-shifter">
+        <div class="book-wrapper">
+          <div id="book" class="book"></div>
+        </div>
+      </div>
+
+      <button id="next-btn" class="nav-btn" aria-label="Next Page">
+        <i class="ph ph-caret-right"></i>
+      </button>
+    </div>
+    
+    <div class="controls">
+      <span id="page-counter">Cover Depan</span>
+    </div>
+  </div>
+
+  <!-- Layar Peringatan Portrait -->
+  <div id="portrait-warning" class="portrait-warning">
+    <i class="ph ph-device-rotate"></i>
+    <h2>Mohon Putar HP Anda</h2>
+    <p>Buku kenangan ini dirancang khusus untuk layar mendatar (Landscape) agar memberikan pengalaman visual terbaik tanpa terpotong.</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
